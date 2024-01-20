@@ -26,7 +26,7 @@ public class Player extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Start player");
+        System.out.println(getName()+" Intenta conectarse");
         try (Socket jugador = new Socket()) {
             InetSocketAddress addr = new InetSocketAddress("localhost", 5555);
             jugador.connect(addr);
@@ -48,24 +48,22 @@ public class Player extends Thread {
                 envioServ.println("empiezo");
                 envioServ.flush();
                 String msg = reciboServ.readLine();
-                System.out.println(msg);
                 if ("ok".equalsIgnoreCase(msg)) {
                     ////////////////////////////////
                     /////////// PREGUNTAR SI HAY QUE INTRODUCIR UN NOMBRE O CON EL GETNAME DEL HILO VALE
                     ///////////////////////////////
                     if (checkNickName(getName())) {
-                        System.out.println(gameType + "," + getName()+","+5555);
                         envioServ.println(gameType + "," + getName()+","+5555);
                         envioServ.flush();
                         //Recibimos una String; nickNameOponente, host, puerto, anfitrion, idPartida
                         msg = reciboServ.readLine();
                         String[] datos = msg.split(",");
-                        System.out.println("SOY "+getName()+" Mi oponentes es: " + datos[0]);
                         if ("anfitrion".equalsIgnoreCase(datos[3])) {
-                            System.out.println("Eres anfitrion");
+                            System.out.println("----------JUGADORES DE LA PARTIDA "+datos[4]+"---------- \n\t\t\tANFITRION: "+getName()+"\n\t\t\tINVITADO:  " + datos[0]+"\n");
+                            //System.out.println("En la partida "+datos[4]+" ANFITRION: \n\t\tYo: "+getName()+". \n\t\tOponente: " + datos[0]);
                             conexionAnfitrion(datos, envioServ);
                         } else {
-                            System.out.println("Tu oponente es el anfitrion");
+                            //System.out.println("En la partida "+datos[4]+" INVITADO: \n\t\tYo: "+getName()+". \n\t\tOponente: " + datos[0]);
                             conexionInvitado(datos);
                         }
                     } else {
@@ -115,11 +113,11 @@ public class Player extends Thread {
                 envioInv.flush();
                 resultado = reciboSInv.readLine();
                 if("V".equalsIgnoreCase(resultado)){
-                    System.out.println("PARTIDA: "+datos[4]+" Invitado: He Perdido");
+                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTADO PARTIDA: "+datos[4]+" <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el ANFITRION, "+datos[0]+"\n");
                 }else if("D".equalsIgnoreCase(resultado)){
-                    System.out.println("PARTIDA: "+datos[4]+" Invitado: He ganado");
+                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTDO PARTIDA: "+datos[4]+" <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el INVITADO, "+getName()+"\n");
                 }else{
-                    System.out.println("PARTIDA: "+datos[4]+" Hemos empatado, tiramos de nuevo");
+                    System.out.println("<<<<<<<<<<<<<<<<<<<< RESULTADO PARTIDA: "+datos[4]+" >>>>>>>>>>>>>>>>>>>>\n\t\t    ¡¡¡HEMOS EMPATADO, SE JUEGA DE NUEVO!!!\n");
                 }
             }
             enPartida=false;
@@ -159,7 +157,8 @@ public class Player extends Thread {
                 if (checkNum(resultadoInv) && checkRango(Integer.parseInt(resultadoInv))) {
                     int tiradaInv = Integer.parseInt(resultadoInv);
                     int tiradaAnf = new Random().nextInt(1, 7);
-                    System.out.println("Resultado invitado: " + tiradaInv + "\nResultado anfitrion: " + tiradaAnf);
+                    System.out.println("========== JUGADA DE LA PARTIDA "+datos[4]+" ==========\n\t\t\tInvitado saca:  "+tiradaInv+"\n\t\t\tAnfitrion saca: "+tiradaAnf+"\n");
+                    //System.out.println("Resultado invitado: " + tiradaInv + "\nResultado anfitrion: " + tiradaAnf);
                     if (tiradaAnf > tiradaInv) {
                         envioDePartidaAnf.println("V");
                         envioDePartidaAnf.flush();

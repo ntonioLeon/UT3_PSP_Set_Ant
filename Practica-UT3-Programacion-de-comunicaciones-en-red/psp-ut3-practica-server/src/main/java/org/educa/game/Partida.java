@@ -73,11 +73,9 @@ public class Partida {
 
     @Override
     public String toString() {
-        return "Partida{" +
-                "jugador1=" + jugador1.getNombre() +
-                ", jugador2=" + jugador2.getNombre() +
-                ", ganador='" + ganador + '\'' +
-                ", id=" + id +
-                '}';
+        return "<<<<<<<<<<<<<<<<<<<< Partida "+ id +" >>>>>>>>>>>>>>>>>>>>"+
+                "\n\t\t\t    Anfitrion: " + jugador1.getNombre() +
+                "\n\t\t\t    Invitado:  " + jugador2.getNombre() +
+                "\n\t\t    EL GANADOR HA SIDO: " + ganador+"\n";
     }
 }
