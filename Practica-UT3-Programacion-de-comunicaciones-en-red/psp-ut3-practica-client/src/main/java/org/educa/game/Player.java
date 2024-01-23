@@ -16,7 +16,8 @@ public class Player extends Thread {
 
     /**
      * Constructor de Player
-     * @param name recibe un nombre
+     *
+     * @param name     recibe un nombre
      * @param gameType recibe un tipo de juego
      */
     public Player(String name, String gameType) {
@@ -26,7 +27,7 @@ public class Player extends Thread {
 
     @Override
     public void run() {
-        System.out.println(getName()+" Intenta conectarse");
+        System.out.println(getName() + " Intenta conectarse");
         try (Socket jugador = new Socket()) {
             InetSocketAddress addr = new InetSocketAddress("localhost", 5555);
             jugador.connect(addr);
@@ -38,6 +39,7 @@ public class Player extends Thread {
 
     /**
      * Clase que realiza la conexión de los jugadores para la partida, determina si es anfitrion o invitado
+     *
      * @param jugador recibe jugador
      */
     private void conexion(Socket jugador) {
@@ -53,15 +55,15 @@ public class Player extends Thread {
                     /////////// PREGUNTAR SI HAY QUE INTRODUCIR UN NOMBRE O CON EL GETNAME DEL HILO VALE
                     ///////////////////////////////
                     if (checkNickName(getName())) {
-                        envioServ.println(gameType + "," + getName()+","+5555);
+                        envioServ.println(gameType + "," + getName() + "," + 5555);
                         envioServ.flush();
                         //Recibimos una String; nickNameOponente, host, puerto, anfitrion, idPartida
                         msg = reciboServ.readLine();
                         String[] datos = msg.split(",");
                         if ("anfitrion".equalsIgnoreCase(datos[3])) {
-                            System.out.println("----------JUGADORES DE LA PARTIDA "+datos[4]+"---------- \n\t\t\tANFITRION: "+getName()+"\n\t\t\tINVITADO:  " + datos[0]+"\n");
+                            System.out.println("----------JUGADORES DE LA PARTIDA " + datos[4] + "---------- \n\t\t\tANFITRION: " + getName() + "\n\t\t\tINVITADO:  " + datos[0] + "\n");
                             //System.out.println("En la partida "+datos[4]+" ANFITRION: \n\t\tYo: "+getName()+". \n\t\tOponente: " + datos[0]);
-                            conexionAnfitrion(datos, envioServ);
+                            conexionAnfitrion(datos);
                         } else {
                             //System.out.println("En la partida "+datos[4]+" INVITADO: \n\t\tYo: "+getName()+". \n\t\tOponente: " + datos[0]);
                             conexionInvitado(datos);
@@ -80,18 +82,13 @@ public class Player extends Thread {
 
     /**
      * Metodo que realiza las conexiones con el anfitrion cuando se es invitado
+     *
      * @param datos recibe los datos
      */
     private void conexionInvitado(String[] datos) {
         try (Socket socketInvitado = new Socket()) {
-            boolean esperando = true;
-            /////////////////////
-            /////////////////////
-            //////// PREGUNTAR MANUEL FORMA DE HACER ESPERAR A LOS INVITADOS
-            ////////////////////
-            ////////////////////
-            Thread.sleep(1000);
-            InetSocketAddress addrInv = new InetSocketAddress(datos[1],Integer.parseInt(datos[2]));
+            Thread.sleep(50);
+            InetSocketAddress addrInv = new InetSocketAddress(datos[1], Integer.parseInt(datos[2]));
             socketInvitado.connect(addrInv);
             partidaInvitado(socketInvitado, datos);
         } catch (Exception e) {
@@ -103,39 +100,38 @@ public class Player extends Thread {
      * Método que realiza la interacción del invitado con el anfitrión cuando empieza la partida
      * @param socketInvitado
      */
-    private void partidaInvitado(Socket socketInvitado, String [] datos) {
-        try(BufferedReader reciboSInv = new BufferedReader(new InputStreamReader(socketInvitado.getInputStream()));
-            PrintWriter envioInv = new PrintWriter(new OutputStreamWriter(socketInvitado.getOutputStream()))){
-            String resultado="";
-            while(!"V".equalsIgnoreCase(resultado)&&!"D".equalsIgnoreCase(resultado)){
-                int tiradaInv = new Random().nextInt(1,7);
+    private void partidaInvitado(Socket socketInvitado, String[] datos) {
+        try (BufferedReader reciboSInv = new BufferedReader(new InputStreamReader(socketInvitado.getInputStream()));
+             PrintWriter envioInv = new PrintWriter(new OutputStreamWriter(socketInvitado.getOutputStream()))) {
+            String resultado = "";
+            while (!"V".equalsIgnoreCase(resultado) && !"D".equalsIgnoreCase(resultado)) {
+                int tiradaInv = new Random().nextInt(1, 7);
                 envioInv.println(tiradaInv);
                 envioInv.flush();
                 resultado = reciboSInv.readLine();
-                if("V".equalsIgnoreCase(resultado)){
-                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTADO PARTIDA: "+datos[4]+" <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el ANFITRION, "+datos[0]+"\n");
-                }else if("D".equalsIgnoreCase(resultado)){
-                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTDO PARTIDA: "+datos[4]+" <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el INVITADO, "+getName()+"\n");
-                }else{
-                    System.out.println("<<<<<<<<<<<<<<<<<<<< RESULTADO PARTIDA: "+datos[4]+" >>>>>>>>>>>>>>>>>>>>\n\t\t    ¡¡¡HEMOS EMPATADO, SE JUEGA DE NUEVO!!!\n");
+                if ("V".equalsIgnoreCase(resultado)) {
+                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTADO PARTIDA: " + datos[4] + " <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el ANFITRION, " + datos[0] + "\n");
+                } else if ("D".equalsIgnoreCase(resultado)) {
+                    System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTDO PARTIDA: " + datos[4] + " <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el INVITADO, " + getName() + "\n");
+                } else {
+                    System.out.println("<<<<<<<<<<<<<<<<<<<< RESULTADO PARTIDA: " + datos[4] + " >>>>>>>>>>>>>>>>>>>>\n\t\t    ¡¡¡HEMOS EMPATADO, SE JUEGA DE NUEVO!!!\n");
                 }
             }
-            enPartida=false;
-        }catch (IOException e){
+            enPartida = false;
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Metodo que realiza las conexiones con el invitado cuando se es anfitrion
-     * @param datos recibe los datos
-     * @param envioServ recibe el PrintWriter para conectarse con el servidor
+     * @param datos     recibe los datos
      */
-    private void conexionAnfitrion(String[] datos, PrintWriter envioServ) {
+    private void conexionAnfitrion(String[] datos) {
         try (ServerSocket socketAnfitrion = new ServerSocket()) {
             InetSocketAddress addrPartida = new InetSocketAddress(datos[1], Integer.parseInt(datos[2]));
             socketAnfitrion.bind(addrPartida);
-            partidaAnfitrion(datos, envioServ, socketAnfitrion);
+            partidaAnfitrion(datos, socketAnfitrion);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,11 +139,11 @@ public class Player extends Thread {
 
     /**
      * Método que realiza la interacción del invitado con el anfitrión cuando empieza la partida
-     * @param datos recibe los datos
-     * @param envioServ recibe el PrintWriter para conectarse con el servidor
+     *
+     * @param datos           recibe los datos
      * @param socketAnfitrion recibe el Server socket para aceptar la conexión
      */
-    private void partidaAnfitrion(String[] datos, PrintWriter envioServ, ServerSocket socketAnfitrion) {
+    private void partidaAnfitrion(String[] datos, ServerSocket socketAnfitrion) {
         try (Socket partidaAnfitrion = socketAnfitrion.accept();
              BufferedReader reciboDePartidaAnf = new BufferedReader(new InputStreamReader(partidaAnfitrion.getInputStream()));
              PrintWriter envioDePartidaAnf = new PrintWriter(new OutputStreamWriter(partidaAnfitrion.getOutputStream()))) {
@@ -157,27 +153,50 @@ public class Player extends Thread {
                 if (checkNum(resultadoInv) && checkRango(Integer.parseInt(resultadoInv))) {
                     int tiradaInv = Integer.parseInt(resultadoInv);
                     int tiradaAnf = new Random().nextInt(1, 7);
-                    System.out.println("========== JUGADA DE LA PARTIDA "+datos[4]+" ==========\n\t\t\tInvitado saca:  "+tiradaInv+"\n\t\t\tAnfitrion saca: "+tiradaAnf+"\n");
+                    System.out.println("========== JUGADA DE LA PARTIDA " + datos[4] + " ==========\n\t\t\tInvitado saca:  " + tiradaInv + "\n\t\t\tAnfitrion saca: " + tiradaAnf + "\n");
                     //System.out.println("Resultado invitado: " + tiradaInv + "\nResultado anfitrion: " + tiradaAnf);
                     if (tiradaAnf > tiradaInv) {
                         envioDePartidaAnf.println("V");
                         envioDePartidaAnf.flush();
                         resultadoPartida = "V";
-                        envioServ.println(datos[4]+" "+resultadoPartida);
-                        envioServ.flush();
-
+                        System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTADO PARTIDA: " + datos[4] + " <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el ANFITRION, " + datos[0] + "\n");
                     } else if (tiradaAnf < tiradaInv) {
                         envioDePartidaAnf.println("D");
                         envioDePartidaAnf.flush();
                         resultadoPartida = "D";
-                        envioServ.println(datos[4]+" "+resultadoPartida);
-                        envioServ.flush();
-
+                        System.out.println(">>>>>>>>>>>>>>>>>>>> RESULTADO PARTIDA: " + datos[4] + " <<<<<<<<<<<<<<<<<<<<\n\t\t\t   Ha ganado el INVITADO, " + datos[0] + "\n");
                     } else {
                         envioDePartidaAnf.println("E");
                         envioDePartidaAnf.flush();
                     }
                 }
+            }
+            finDeLaPartida(datos, resultadoPartida);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo que se encarga de notificar al servidor que la partida ha terminado y quien es el ganador.
+     * @param datos Datos que se enviaran al server
+     * @param resultadoPartida El resultado del match
+     */
+    private void finDeLaPartida(String[] datos, String resultadoPartida) {
+        try (Socket jugador = new Socket()) {
+            InetSocketAddress addr = new InetSocketAddress("localhost", 5555);
+            jugador.connect(addr);
+            try (BufferedReader reciboFin = new BufferedReader(new InputStreamReader(jugador.getInputStream()));
+                 PrintWriter envioFin = new PrintWriter(new OutputStreamWriter(jugador.getOutputStream()))) {
+                envioFin.println("termino");
+                envioFin.flush();
+                String msg = reciboFin.readLine();
+                if ("ok".equalsIgnoreCase(msg)) {
+                    envioFin.println(datos[4] + "," + resultadoPartida + "," + gameType);
+                    envioFin.flush();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,6 +205,7 @@ public class Player extends Thread {
 
     /**
      * Comprueba que el nombre del usuario es menor a 10 carácteres
+     *
      * @param name recibe el nombre
      * @return devuelve boolean, si es válido true, si no, false
      */
@@ -209,6 +229,7 @@ public class Player extends Thread {
 
     /**
      * comprueba si el número es un numero entre 1 y 6
+     *
      * @param num recibe el numero
      * @return devuelve boolean, true si es un numero dentro del rango, false si no
      */

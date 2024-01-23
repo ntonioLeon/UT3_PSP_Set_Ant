@@ -10,7 +10,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 /**
- * Clase Server, recibe y controla todos los contactos de los jugadores para crear la partida
+ * @author Sergio Gonzalez y Antonio Leon
+ * Clase Server, recibe y controla todos los contactos de los jugadores para crear la partida.
  */
 public class Server {
     public final String DIRECCION = "localhost"; // Dirección del servidor
@@ -18,6 +19,9 @@ public class Server {
     private SalaEsperaJugadores salaEsperaJugadores = new SalaEsperaJugadores(); // Se crea el objeto de Sala de Espera
     private ArrayList<Partida> listaPartida = new ArrayList<>(); // Se crea una lista de partidas
 
+    /**
+     *
+     */
     public void run() {
         System.out.println("Creando socket servidor");
         Socket resolverPeticiones = null;
@@ -40,9 +44,13 @@ public class Server {
         }
     }
 
+    /**
+     * Cierra el socket del server.
+     * @param resolverPeticiones el socket que se va a cerrar
+     */
     private static void cerrarSockets(Socket resolverPeticiones) {
         try {
-            if (resolverPeticiones != null) {
+            if (resolverPeticiones != null) { //Si existe lo cierras.
                 resolverPeticiones.close();
             }
         } catch (IOException e) {
@@ -53,7 +61,6 @@ public class Server {
 
     /**
      * Consigue la sala de espera de los jugadores
-     *
      * @return SalaEsperaJugadores
      */
     public synchronized SalaEsperaJugadores getSala() {
@@ -73,7 +80,6 @@ public class Server {
      * Comprueba la primera partida que no tenga 2 jugadores e introduce al jugador,
      * en caso de que no haya partidas libres, crea una nueva partida,
      * se mete al jugador y se añade a la lista de partidas
-     *
      * @param jugador recibe un jugador
      */
     public synchronized void comprobarPartida(Jugador jugador) {
@@ -103,7 +109,6 @@ public class Server {
 
     /**
      * Busca al jugador en la partida
-     *
      * @param jugador recibe el jugador
      * @return boolean, devuelve True si es jugador1 y False si es jugador2
      */
@@ -136,21 +141,10 @@ public class Server {
     }
 
     /**
-     * Comprueba si la partida a la que pertenece el jugador ya está completa (2 jugadores)
      *
-     * @param jugador recibe jugador
-     * @return boolean, true si está llena, false si no está llena
+     * @param idPartida
+     * @return
      */
-    public synchronized boolean comprobarPartidaLlena(Jugador jugador) {
-        for (Partida partida : listaPartida) {
-            if ((jugador.getNombre().equalsIgnoreCase(partida.getJugador1().getNombre()) && partida.getJugador2() != null) ||
-                    (jugador.getNombre().equalsIgnoreCase(partida.getJugador2().getNombre()) && partida.getJugador1() != null)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public synchronized Partida creaccionDePartida(int idPartida) {
         for (Partida partida : listaPartida) {
             if (partida.getId() == idPartida) {
@@ -160,6 +154,11 @@ public class Server {
         return null;
     }
 
+    /**
+     *
+     * @param idPartida
+     * @param resultado
+     */
     public synchronized void acabarPartida(int idPartida, String resultado) {
         for (Partida partida : listaPartida) {
             if (partida.getId() == idPartida) {
@@ -172,6 +171,10 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * @param id
+     */
     public synchronized void eliminarPartidas(int id) {
         for (int i = 0; i < listaPartida.size(); i++) {
             if (listaPartida.get(i).getId() == id) {
@@ -179,6 +182,4 @@ public class Server {
             }
         }
     }
-
-
 }
