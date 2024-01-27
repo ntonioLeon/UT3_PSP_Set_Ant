@@ -1,9 +1,6 @@
 package org.educa.game;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,7 +17,7 @@ public class Server {
     private ArrayList<Partida> listaPartida = new ArrayList<>(); // Se crea una lista de partidas
 
     /**
-     *
+     * Metodo que va creado hilos segun le vayan entrando peticiones (jugadores)
      */
     public void run() {
         System.out.println("Creando socket servidor");
@@ -125,7 +122,6 @@ public class Server {
 
     /**
      * Busca el ID de la partida del jugador
-     *
      * @param jugador recibe el jugador
      * @return devuelve el ID de la partida, -1 si no lo encuentra en ninguna partida
      */
@@ -141,9 +137,9 @@ public class Server {
     }
 
     /**
-     *
-     * @param idPartida
-     * @return
+     * Metodo que a partir de un ID te devuelve una partida.
+     * @param idPartida El id de la partida que buscamos.
+     * @return La partida.
      */
     public synchronized Partida creaccionDePartida(int idPartida) {
         for (Partida partida : listaPartida) {
@@ -155,9 +151,9 @@ public class Server {
     }
 
     /**
-     *
-     * @param idPartida
-     * @param resultado
+     * Metodo que finaliza una partida declarando el ganador de esta.
+     * @param idPartida ID de la partida a acabar
+     * @param resultado Resultado para saber quien gano.
      */
     public synchronized void acabarPartida(int idPartida, String resultado) {
         for (Partida partida : listaPartida) {
@@ -172,8 +168,8 @@ public class Server {
     }
 
     /**
-     *
-     * @param id
+     * Metodo que elimina la partida de la memoria una vez esta esta acabada.
+     * @param id El id de la partida a ser eliminada.
      */
     public synchronized void eliminarPartidas(int id) {
         for (int i = 0; i < listaPartida.size(); i++) {

@@ -14,8 +14,8 @@ public class Invitacion implements Runnable{
 
     /**
      * Constructor de invitación, recibe socket y server
-     * @param socket
-     * @param server
+     * @param socket que se conecta a jugadores
+     * @param server Objeto del server para evitar los metodos estaticos
      */
     Invitacion(Socket socket, Server server){
         this.socket=socket;
@@ -32,6 +32,8 @@ public class Invitacion implements Runnable{
             PrintWriter envioInfo = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()));
             BufferedReader reciboInfo= new BufferedReader(new InputStreamReader(socket.getInputStream()))){
             String msg = reciboInfo.readLine();
+
+            //Cuando se crea partida se asigna a los jugadores una sala, se les confiere la info de su rival, su status en la partida y se corta comunicacion
             if("empiezo".equalsIgnoreCase(msg)){
                 envioInfo.println("ok");
                 envioInfo.flush();
@@ -44,11 +46,13 @@ public class Invitacion implements Runnable{
                     System.out.println("Aquí hirían otros juegos si los hubiera.");
                 }
             }
+
+            //Termina la partida (Solo conexion entre server anfitrion)
             if ("termino".equalsIgnoreCase(msg)) {
                 terminarPartidaDados(envioInfo, reciboInfo);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -61,9 +65,9 @@ public class Invitacion implements Runnable{
         String msg;
         envioInfo.println("ok");
         envioInfo.flush();
-        //---
         msg = reciboInfo.readLine();
         String[] apuntes = msg.split(",");
+
         if ("dados".equalsIgnoreCase(apuntes[2])) {
             Partida partida = server.creaccionDePartida(Integer.parseInt(apuntes[0]));
             server.acabarPartida(Integer.parseInt(apuntes[0]), apuntes[1]);
@@ -87,6 +91,7 @@ public class Invitacion implements Runnable{
         server.getSala().getListaJugadores().add(jugador);
         server.comprobarPartida(jugador);
         Partida partida = server.creaccionDePartida(server.obtenerIdPartida(jugador));
+
         while (partida.getJugador1() == null || partida.getJugador2() == null) {
             partida = server.creaccionDePartida(server.obtenerIdPartida(jugador));
         }

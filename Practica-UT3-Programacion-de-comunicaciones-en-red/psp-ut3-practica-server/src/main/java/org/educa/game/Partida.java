@@ -1,7 +1,9 @@
 package org.educa.game;
 
-import java.util.ArrayList;
 
+/**
+ * @author Sergio Gonzalez y Antonio Leon
+ */
 public class Partida {
     private Jugador jugador1, jugador2; // Se crean dos objetos jugadores, que van a ser el numero de jugadores en este typeGame
     private String ganador; // Variable que determina si es ganador "V", perdedor "P", o ha habido un empate "E"

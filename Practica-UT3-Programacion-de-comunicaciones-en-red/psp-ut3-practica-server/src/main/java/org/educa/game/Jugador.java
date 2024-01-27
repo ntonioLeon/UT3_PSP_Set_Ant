@@ -1,6 +1,7 @@
 package org.educa.game;
 
 /**
+ * @author Sergio Gonzalez y Antonio Leon
  * Clase creada para guardar los datos del jugador
  */
 public class Jugador {
@@ -8,8 +9,6 @@ public class Jugador {
     private String direccion; // Dirección, por defecto va a ser "Localhost"
     private int puerto; // Puerto que se va a utilizar
     private boolean enPartida; // Determina si el jugador está en partida true y si no lo está false
-    private boolean anfitrion;
-    private String resultado;
 
     /**
      * Constructor de jugador

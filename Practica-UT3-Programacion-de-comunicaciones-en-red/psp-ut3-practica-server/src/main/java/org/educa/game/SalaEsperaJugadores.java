@@ -4,6 +4,7 @@ package org.educa.game;
 import java.util.ArrayList;
 
 /**
+ * @author Sergio Gonzalez y Antonio Leon
  * Clase que se utiliza para crear la sala de espera de los jugadores antes de empezar la partida
  */
 public class SalaEsperaJugadores {
